@@ -1,25 +1,36 @@
 import Test, { randomFloat, validateReturnValueEquals } from "../Test";
 
-const length = 100000000;
+const length = 10000000;
 const test = new Test(`Max abs (${length})`);
 
-test.pre(context => {
-    context.data = randomFloat(length);
+test.pre(ctx => {
+    ctx.data = randomFloat(length);
 });
 
 test.post(validateReturnValueEquals);
 
-test.add("Math.max(Math.abs)", context => {
-    const data = context.data;
-    let max = 0;
+test.add("Math.max(Math.abs)", ctx => {
+    const data = ctx.data;
+    let res = 0;
     for (let i = 0; i < data.length; ++i) {
-        max = Math.max(max, Math.abs(data[i]));
+        res = Math.max(res, Math.abs(data[i]));
     }
-    return max;
+    return res;
 });
 
-test.add("if (value > valueMax)", context => {
-    const data = context.data;
+test.add("local Math.max(Math.abs)", ctx => {
+    const data = ctx.data;
+    const max = Math.max;
+    const abs = Math.abs;
+    let res = 0;
+    for (let i = 0; i < data.length; ++i) {
+        res = max(res, abs(data[i]));
+    }
+    return res;
+});
+
+test.add("if (value > valueMax)", ctx => {
+    const data = ctx.data;
     let valueMax = 0;
     let valueMin = 0;
     for (let i = 0; i < data.length; ++i) {

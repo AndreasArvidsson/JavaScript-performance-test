@@ -1,7 +1,7 @@
 {
     "name": "perf-test",
     "scripts": {
-        "start": "webpack-dev-server --config webpack.config.js --mode development --port 9090 --open"
+        "start": "webpack-dev-server --config webpack.config.js --mode development --port 9095 --open"
     },
     "dependencies": {},
     "devDependencies": {
@@ -22,7 +22,6 @@
         "react": "latest",
         "react-dom": "latest",
         "eslint-plugin-react": "latest",
-        "owp.graph": "latest",
         "bootstrap": "latest"
     }
 }

@@ -1,9 +1,9 @@
-
 class Test {
 
-    constructor(name) {
+    constructor(name, repeats) {
         this.name = name;
         this.tests = [];
+        this.repeats = repeats || 10;
         this.context = {};
     }
 
@@ -23,19 +23,52 @@ class Test {
         if (this.preCallback) {
             this.preCallback(this.context);
         }
-        const result = this.tests.map(testCase => {
-            const t1 = window.performance.now();
-            const returnValue = testCase.callback(this.context);
-            const time = window.performance.now() - t1;
-            return {
-                name: testCase.name,
-                returnValue,
-                time
-            };
-        })
-        if (this.postCallback) {
-            this.postCallback(result);
+
+        const returnValues = {};
+        const times = {};
+
+        for (let i = 0; i < this.repeats; ++i) {
+            this.tests.forEach(tc => {
+                const t0 = window.performance.now();
+                const returnValue = tc.callback(this.context);
+                const t1 = window.performance.now();
+
+                if (!times[tc.name]) {
+                    times[tc.name] = [];
+                    returnValues[tc.name] = returnValue;
+                }
+                times[tc.name].push(t1 - t0);
+            });
         }
+
+        const result = this.tests.map(tc => ({
+            name: tc.name,
+            callback: tc.callback,
+            time: median(times[tc.name]) * this.repeats,
+            returnValue: returnValues[tc.name]
+        }));
+
+        // const result = this.tests.map(testCase => {
+        //     const times = [];
+        //     let returnValue;
+        //     for (let i = 0; i < this.repeats; ++i) {
+        //         const t0 = window.performance.now();
+        //         returnValue = testCase.callback(this.context);
+        //         const t1 = window.performance.now();
+        //         times.push(t1 - t0);
+        //     }
+        //     return {
+        //         name: testCase.name,
+        //         callback: testCase.callback,
+        //         time: median(times) * this.repeats,
+        //         returnValue
+        //     };
+        // })
+
+        if (this.postCallback) {
+            this.postCallback(result, this.context);
+        }
+
         return result;
     }
 }
@@ -68,6 +101,17 @@ function validateReturnValueEquals(res) {
     });
     console.log("Return value: ", returnValue);
     return returnValue;
+}
+
+function median(values) {
+    values.sort();
+    const i = Math.floor(values.length / 2);
+    //Odd number of values. Just pick the middle one.
+    if (values.length % 2 === 1) {
+        return values[i];
+    }
+    //Even number of values. Take the mean of the two in the middle.
+    return (values[i - 1] + values[i]) / 2;
 }
 
 export default Test;

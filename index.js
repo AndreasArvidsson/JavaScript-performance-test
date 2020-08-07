@@ -31,21 +31,29 @@ const App = () => {
 
     useEffect(() => {
         runAllTests();
-        // runTests("localVar");
+        // runTests(["max"]);
+        // runTests(["max", "abs", "maxAbs", "pow"]);
     }, []);
+
+    const renderTestCase = (testCase, fastestTime) => {
+        const title = testCase.callback.toString();
+        return (
+            <tr key={testCase.name}>
+                <td title={title}>{testCase.name}</td>
+                <td>{Math.round(testCase.time)}</td>
+                <td>{Math.round(testCase.time - fastestTime)}</td>
+                <td>{Math.round((testCase.time / fastestTime - 1) * 100)}</td>
+            </tr>
+        );
+    }
 
     const renderTestCases = (testCases) => {
         if (!testCases.length) {
             return null;
         }
         const fastestTime = testCases[0].time;
-        return testCases.map(res =>
-            <tr key={res.name}>
-                <td>{res.name}</td>
-                <td>{res.time}</td>
-                <td>{res.time - fastestTime}</td>
-                <td>{Math.round((res.time / fastestTime - 1) * 100)}</td>
-            </tr>
+        return testCases.map(testCase =>
+            renderTestCase(testCase, fastestTime)
         );
     }
 
@@ -54,10 +62,12 @@ const App = () => {
             <table key={testResult.test.name} className="table table-striped">
                 <thead className="thead-dark">
                     <tr>
-                        <th style={{ width: "30%" }}>{testResult.test.name}</th>
-                        <th>Time (ms)</th>
+                        <th style={{ width: "30%" }}>
+                            {testResult.test.name + " X " + testResult.test.repeats}
+                        </th>
+                        <th title="Median time X number of repeats">Time (ms)</th>
                         <th>Delta (ms)</th>
-                        <th>% slower</th>
+                        <th>Slower (%)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,21 +88,3 @@ ReactDOM.render(
     <App />,
     document.getElementById("root")
 );
-
-// import Graph from ".";
-// const defaultOptions = {
-//     title: {
-//         label: "React demo"
-//     },
-//     graph: {
-//         dataY: [
-//             [1, 3, 3],
-//             [2, 1, 7]
-//         ]
-//     }
-// };
-{/* <Graph
-                ref={ref}
-                options={useDefault ? defaultOptions : options}
-                style={style}
-            /> */}
