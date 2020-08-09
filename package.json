@@ -1,7 +1,8 @@
 {
     "name": "perf-test",
     "scripts": {
-        "start": "webpack-dev-server --config webpack.config.js --mode development --port 9095 --open"
+        "start": "webpack-dev-server --config webpack.config.js --mode development --port 9091 --open",
+        "build": "rm docs/* && webpack --config webpack.config.js --mode production"
     },
     "dependencies": {},
     "devDependencies": {

@@ -1,9 +1,9 @@
 class Test {
 
-    constructor(name, repeats) {
+    constructor(name, repeats = 10) {
         this.name = name;
         this.tests = [];
-        this.repeats = repeats || 10;
+        this.repeats = repeats;
         this.context = {};
     }
 
@@ -48,29 +48,23 @@ class Test {
             returnValue: returnValues[tc.name]
         }));
 
-        // const result = this.tests.map(testCase => {
-        //     const times = [];
-        //     let returnValue;
-        //     for (let i = 0; i < this.repeats; ++i) {
-        //         const t0 = window.performance.now();
-        //         returnValue = testCase.callback(this.context);
-        //         const t1 = window.performance.now();
-        //         times.push(t1 - t0);
-        //     }
-        //     return {
-        //         name: testCase.name,
-        //         callback: testCase.callback,
-        //         time: median(times) * this.repeats,
-        //         returnValue
-        //     };
-        // })
-
         if (this.postCallback) {
             this.postCallback(result, this.context);
         }
 
         return result;
     }
+}
+
+function median(values) {
+    values.sort();
+    const i = Math.floor(values.length / 2);
+    //Odd number of values. Just pick the middle one.
+    if (values.length % 2 === 1) {
+        return values[i];
+    }
+    //Even number of values. Take the mean of the two in the middle.
+    return (values[i - 1] + values[i]) / 2;
 }
 
 function randomFloat(length) {
@@ -99,20 +93,12 @@ function validateReturnValueEquals(res) {
             throw Error(`Incorrect return value. Expected: ${returnValue}, found: ${testRes.returnValue}`);
         }
     });
-    console.log("Return value: ", returnValue);
     return returnValue;
 }
 
-function median(values) {
-    values.sort();
-    const i = Math.floor(values.length / 2);
-    //Odd number of values. Just pick the middle one.
-    if (values.length % 2 === 1) {
-        return values[i];
-    }
-    //Even number of values. Take the mean of the two in the middle.
-    return (values[i - 1] + values[i]) / 2;
-}
-
 export default Test;
-export { randomFloat, randomInt, validateReturnValueEquals };
+export {
+    randomFloat,
+    randomInt,
+    validateReturnValueEquals
+};

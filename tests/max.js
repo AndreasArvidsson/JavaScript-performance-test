@@ -61,7 +61,6 @@ test.add("value > res ? value : res", ctx => {
     return res;
 });
 
-
 test.add("if (value > res)", ctx => {
     const data = ctx.data;
     let res = 0;

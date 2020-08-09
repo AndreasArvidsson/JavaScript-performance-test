@@ -5,11 +5,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const App = () => {
     const [result, setResult] = useState([]);
 
-    const runTest = (test) => {
-        const result = test.run();
-        result.sort((a, b) => a.time - b.time);
-        return { test, result };
-    }
+    useEffect(() => {
+        runAllTests();
+        // runTests(["max", "pow"]);
+    }, []);
 
     /* eslint-disable-next-line no-unused-vars */
     const runAllTests = () => {
@@ -29,17 +28,17 @@ const App = () => {
         setResult(res);
     }
 
-    useEffect(() => {
-        runAllTests();
-        // runTests(["max"]);
-        // runTests(["max", "abs", "maxAbs", "pow"]);
-    }, []);
+    const runTest = (test) => {
+        const result = test.run();
+        result.sort((a, b) => a.time - b.time);
+        return { test, result };
+    }
 
     const renderTestCase = (testCase, fastestTime) => {
         const title = testCase.callback.toString();
         return (
             <tr key={testCase.name}>
-                <td title={title}>{testCase.name}</td>
+                <td title={title} style={{ minWidth: "35%" }}>{testCase.name}</td>
                 <td>{Math.round(testCase.time)}</td>
                 <td>{Math.round(testCase.time - fastestTime)}</td>
                 <td>{Math.round((testCase.time / fastestTime - 1) * 100)}</td>
@@ -62,7 +61,7 @@ const App = () => {
             <table key={testResult.test.name} className="table table-striped">
                 <thead className="thead-dark">
                     <tr>
-                        <th style={{ width: "30%" }}>
+                        <th title={`${testResult.test.name}\n${testResult.test.repeats} repeats`}>
                             {testResult.test.name + " X " + testResult.test.repeats}
                         </th>
                         <th title="Median time X number of repeats">Time (ms)</th>
