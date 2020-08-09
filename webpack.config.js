@@ -9,8 +9,7 @@ module.exports = (env, argv) => {
     console.log("----------------------------\n")
 
     const isProd = argv.mode === "production";
-    const filename = isProd ? "[contenthash]" : "[name]";
-
+    const filename = isProd || argv.isBuild ? "[contenthash]" : "[name]";
     return {
         entry: path.resolve(__dirname, "index.js"),
         output: {

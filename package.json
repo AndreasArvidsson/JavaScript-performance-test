@@ -5,7 +5,9 @@
     "main": "index.js",
     "scripts": {
         "start": "webpack-dev-server --config webpack.config.js --mode development --port 9091 --open",
-        "build": "rm docs/* && webpack --config webpack.config.js --mode production"
+        "startProd": "webpack-dev-server --config webpack.config.js --mode production --port 9092 --open",
+        "build": "rm docs/* & webpack --config webpack.config.js --mode development --isBuild",
+        "buildProd": "rm docs/* & webpack --config webpack.config.js --mode production --isBuild" 
     },
     "keywords": [
         "js",

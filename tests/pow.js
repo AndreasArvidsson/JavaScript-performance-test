@@ -37,13 +37,4 @@ test.add("value * value", ctx => {
     return sum;
 });
 
-test.add("value ** 2", ctx => {
-    const data = ctx.data;
-    let sum = 0;
-    for (let i = 0; i < data.length; ++i) {
-        sum += data[i] ** 2;
-    }
-    return sum;
-});
-
 export default test;
