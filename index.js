@@ -1,68 +1,122 @@
-import React, { useEffect, useState } from "react";
+import Glyph from "owp.glyphicons";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles.css";
 
 const App = () => {
-    const [result, setResult] = useState([]);
+    const [tests, setTests] = useState([]);
+    const [results, setResults] = useState({});
+    const [isRunning, setIsRunning] = useState();
 
     useEffect(() => {
-        runAllTests();
-        // runTests(["max", "pow"]);
+        loadAllTests();
+        // loadTests(["max", "pow"]);
     }, []);
 
     /* eslint-disable-next-line no-unused-vars */
-    const runAllTests = () => {
+    const loadAllTests = () => {
         const ctx = require.context("./tests", true, /.js/);
         const tests = ctx.keys().map(key => ctx(key).default);
-        const res = tests.map(runTest);
-        setResult(res);
+        setTests(tests);
     }
 
     /* eslint-disable-next-line no-unused-vars */
-    const runTests = (names) => {
+    const loadTests = (names) => {
         if (typeof names === "string") {
             names = [names];
         }
         const tests = names.map(n => require("./tests/" + n + ".js").default);
-        const res = tests.map(runTest);
-        setResult(res);
+        setTests(tests);
+    }
+
+    const runAllTests = () => {
+        let i = -1;
+        const runNextTest = () => {
+            ++i;
+            if (i < tests.length) {
+                const test = tests[i];
+                setIsRunning(test.name);
+                setTimeout(() => {
+                    const result = test.run();
+                    results[test.name] = result;
+                    setResults(results);
+                    runNextTest();
+                }, 0);
+            }
+            else {
+                setIsRunning(null);
+            }
+        };
+        runNextTest();
     }
 
     const runTest = (test) => {
-        const result = test.run();
-        result.sort((a, b) => a.time - b.time);
-        return { test, result };
+        setIsRunning(test.name);
+        setTimeout(() => {
+            const result = test.run();
+            results[test.name] = result;
+            setResults(results);
+            setIsRunning(null);
+        }, 0);
     }
 
-    const renderTestCase = (testCase, fastestTime) => {
-        const title = testCase.callback.toString();
+    const renderTestCase = (tc, tcTime, fastestTime) => {
+        let time, delta, slower;
+        if (tcTime !== undefined) {
+            time = Math.round(tcTime);
+            delta = Math.round(tcTime - fastestTime);
+            slower = Math.round((tcTime / fastestTime - 1) * 100);
+        }
         return (
-            <tr key={testCase.name}>
-                <td title={title} style={{ minWidth: "35%" }}>{testCase.name}</td>
-                <td>{Math.round(testCase.time)}</td>
-                <td>{Math.round(testCase.time - fastestTime)}</td>
-                <td>{Math.round((testCase.time / fastestTime - 1) * 100)}</td>
+            <tr key={tc.name}>
+                <td
+                    title={tc.callback.toString()}
+                    style={{ minWidth: "35%" }}>
+                    {tc.name}
+                </td>
+                <td>{time}</td>
+                <td>{delta}</td>
+                <td>{slower}</td>
             </tr>
         );
     }
 
-    const renderTestCases = (testCases) => {
-        if (!testCases.length) {
-            return null;
+    const renderTestCases = (testCases, result) => {
+        let fastestTime;
+        const times = {};
+        if (result.length) {
+            result.forEach(r => {
+                times[r.name] = r.time
+            });
+            testCases.sort((a, b) => {
+                return times[a.name] - times[b.name];
+            });
+            fastestTime = times[testCases[0].name];
         }
-        const fastestTime = testCases[0].time;
-        return testCases.map(testCase =>
-            renderTestCase(testCase, fastestTime)
+        return testCases.map(tc =>
+            renderTestCase(tc, times[tc.name], fastestTime)
         );
     }
 
-    const renderTest = (testResult) => {
+    const renderTest = (test) => {
+        const result = results[test.name] || [];
+        const spin = isRunning === test.name;
         return (
-            <table key={testResult.test.name} className="table table-striped">
+            <table key={test.name} className="table table-striped">
                 <thead className="thead-dark">
                     <tr>
-                        <th title={`${testResult.test.name}\n${testResult.test.repeats} repeats`}>
-                            {testResult.test.name + " X " + testResult.test.repeats}
+                        <th>
+                            <Glyph
+                                type={"refresh" + (spin ? " spin" : "") + (isRunning && !spin ? " disabled" : "")}
+                                title={"Run test: " + test.name}
+                                //Can't run more than one test at once.
+                                onClick={isRunning ? null : () => runTest(test)}
+                            />
+                            &nbsp;
+                            <span title={`${test.name}\n${test.repeats} repeats`}>
+                                {test.name + " X " + test.repeats}
+                            </span>
                         </th>
                         <th title="Median time X number of repeats">Time (ms)</th>
                         <th>Delta (ms)</th>
@@ -70,7 +124,7 @@ const App = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {renderTestCases(testResult.result)}
+                    {renderTestCases(test.testCases, result)}
                 </tbody>
             </table>
         );
@@ -78,7 +132,14 @@ const App = () => {
 
     return (
         <div style={{ padding: 20 }}>
-            {result.map(renderTest)}
+            <button
+                className="btn btn-dark"
+                disabled={!!isRunning}
+                onClick={runAllTests}
+            >
+                Run all tests
+            </button>
+            {tests.map(renderTest)}
         </div>
     );
 }

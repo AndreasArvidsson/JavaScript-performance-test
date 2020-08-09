@@ -47,15 +47,15 @@ Available utility functions.
 * randomFloat: `function(length: number) => [number]`
 * validateReturnValueEquals: `function(results) => throws error if return value is different`
 
-### 2) Configure which tests to run in `index.js`
+### 2) Configure which tests are loaded/available run in `index.js`
 ```js
-// Run all tests in tests directory.
+// Load all tests in tests directory.
 useEffect(() => {
-    runAllTests();
+    loadAllTests();
 }, []);
 
-// Run only named(by file name) tests.
+// Load only named(by file name) tests.
 useEffect(() => {
-    runTests(["max", "pow"]);
+    loadTests(["max", "pow"]);
 }, []);
 ```

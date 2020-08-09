@@ -46,6 +46,13 @@ module.exports = (env, argv) => {
                         MiniCssExtractPlugin.loader,
                         "css-loader"
                     ]
+                },
+                {
+                    test: /\.(eot|woff|woff2|ttf|svg)$/,
+                    loader: "file-loader",
+                    options: {
+                        name: filename + ".[ext]"
+                    }
                 }
             ]
         },

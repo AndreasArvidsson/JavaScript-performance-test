@@ -2,7 +2,7 @@ class Test {
 
     constructor(name, repeats = 10) {
         this.name = name;
-        this.tests = [];
+        this.testCases = [];
         this.repeats = repeats;
         this.context = {};
     }
@@ -16,7 +16,7 @@ class Test {
     }
 
     add = (name, callback) => {
-        this.tests.push({ name, callback });
+        this.testCases.push({ name, callback });
     }
 
     run = () => {
@@ -28,7 +28,7 @@ class Test {
         const times = {};
 
         for (let i = 0; i < this.repeats; ++i) {
-            this.tests.forEach(tc => {
+            this.testCases.forEach(tc => {
                 const t0 = window.performance.now();
                 const returnValue = tc.callback(this.context);
                 const t1 = window.performance.now();
@@ -41,7 +41,7 @@ class Test {
             });
         }
 
-        const result = this.tests.map(tc => ({
+        const result = this.testCases.map(tc => ({
             name: tc.name,
             callback: tc.callback,
             time: median(times[tc.name]) * this.repeats,
