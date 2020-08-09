@@ -18,12 +18,12 @@ import Test, { randomInt, validateReturnValueEquals } from "../Test";
 // Repeats defaults to 10.
 const test = new Test(`Max (${length})`, repeats = 10);
 
-// pre callback is called BEFORE any test cases are run and is used to setup the test context.
+// Pre callback is called BEFORE any test cases are run and is used to setup the test context.
 test.pre(ctx => {
     ctx.data = randomInt(length);
 });
 
-// post callback is callad AFTER all test cases and is used for cleanup or to evaluate results.
+// Post callback is callad AFTER all test cases and is used for cleanup or to evaluate results.
 test.post((results, ctx) => {
     validateReturnValueEquals(results);
 });
@@ -47,7 +47,7 @@ Available utility functions.
 * randomFloat: `function(length: number) => [number]`
 * validateReturnValueEquals: `function(results) => throws error if return value is different`
 
-### 2) Configure which tests are loaded/available run in `index.js`
+### 2) Configure which tests are loaded/available in `index.js`
 ```js
 // Load all tests in tests directory.
 useEffect(() => {
