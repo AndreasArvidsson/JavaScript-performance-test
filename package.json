@@ -1,8 +1,26 @@
 {
-    "name": "perf-test",
+    "name": "js-performance-test",
+    "description": "Define test suites and cases to evaluate JS performance",
+    "version": "1.0.0",
+    "main": "index.js",
     "scripts": {
         "start": "webpack-dev-server --config webpack.config.js --mode development --port 9091 --open",
         "build": "rm docs/* && webpack --config webpack.config.js --mode production"
+    },
+    "keywords": [
+        "js",
+        "javascript",
+        "performance"
+    ],
+    "author": "Andreas Arvidsson",
+    "license": "MIT",
+    "homepage": "https://github.com/AndreasArvidsson/JavaScript-performance-test",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AndreasArvidsson/JavaScript-performance-test.git"
+    },
+    "bugs": {
+        "url": "https://github.com/AndreasArvidsson/JavaScript-performance-test/issues"
     },
     "dependencies": {},
     "devDependencies": {
